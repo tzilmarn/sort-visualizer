@@ -18,7 +18,7 @@ export interface Props {
 const ToolbarButton = (props: Toolbar.ToolbarButtonProps) => (
 	<Toolbar.Button
 		{...props}
-		className={`rounded-lg p-3 text-2xl hover:bg-primary-500/20 active:bg-primary-500/40 disabled:opacity-30 ${props.className}`}
+		className={`rounded-lg p-3 text-2xl text-gray-600 hover:bg-primary-500/20 active:bg-primary-500/40 disabled:opacity-30 dark:text-gray-50 ${props.className}`}
 	/>
 )
 
@@ -36,7 +36,7 @@ export default function Controls({ onStep }: Props) {
 	}
 
 	return (
-		<Toolbar.Root className='flex gap-1 rounded-lg bg-gray-300 p-1 dark:bg-gray-900'>
+		<Toolbar.Root className='flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-900'>
 			<ToolbarButton
 				onClick={toggleIsPlaying}
 				className={isPlaying ? 'bg-primary-500/20' : ''}

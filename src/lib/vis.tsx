@@ -14,7 +14,7 @@ export default function Vis({ boxes }: Props) {
 					initial={{ scaleY: 0 }}
 					animate={{ scaleY: Math.max(0.01, value) }}
 					style={{ originY: 1 }}
-					className='h-full w-full origin-bottom rounded-sm bg-indigo-500 [min-width:2px]'
+					className='h-full w-full origin-bottom rounded-sm bg-indigo-500 [min-width:4px]'
 					whileHover={{ y: -8 }}
 					whileDrag={{ y: 0 }}
 					dragConstraints={{ bottom: 0 }}
