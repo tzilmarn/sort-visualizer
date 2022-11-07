@@ -11,7 +11,9 @@ const Button = (props: ComponentProps<'button'>) => (
 )
 
 export default function DatasetTab({}: Props) {
-	const { datasetSize, setDatasetSize } = useContext(SimulationControlContext)
+	const { datasetSize, setDatasetSize, maxBarCount } = useContext(
+		SimulationControlContext
+	)
 
 	return (
 		<div className='grid grid-flow-col grid-cols-[1fr_2fr_1fr] grid-rows-2 gap-2'>
@@ -32,13 +34,13 @@ export default function DatasetTab({}: Props) {
 				<figcaption className='text-md text-2xl font-bold'>Bars</figcaption>
 			</figure>
 			<Button
-				disabled={datasetSize >= 100}
+				disabled={datasetSize >= maxBarCount}
 				onClick={() => setDatasetSize(datasetSize + 5)}
 			>
 				﹢5
 			</Button>
 			<Button
-				disabled={datasetSize >= 100}
+				disabled={datasetSize >= maxBarCount}
 				onClick={() => setDatasetSize(datasetSize + 1)}
 			>
 				﹢1

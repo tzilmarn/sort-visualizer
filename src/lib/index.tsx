@@ -7,6 +7,8 @@ import AppTabs from './tabs'
 import { algorithms } from './algorithms'
 
 export default function App() {
+	const maxBarCount = 500
+
 	const [speed, setSpeed] = useState<Speed>(0.5)
 	const [isPlaying, setIsPlaying] = useState(false)
 
@@ -25,7 +27,7 @@ export default function App() {
 	)
 
 	const setDatasetSize = (value: number) => {
-		value = Math.max(0, Math.min(100, value))
+		value = Math.max(0, Math.min(maxBarCount, value))
 
 		if (value > values.length)
 			setValues((old) => [
@@ -64,7 +66,7 @@ export default function App() {
 	}
 	useEffect(() => {
 		if (!isPlaying) return
-		const refreshInterval = 100 / speed
+		const refreshInterval = 1000 / speed
 		const interval = setInterval(sortStep, refreshInterval)
 		return () => clearInterval(interval)
 	}, [isPlaying, speed])
@@ -72,6 +74,7 @@ export default function App() {
 	return (
 		<SimulationControlContext.Provider
 			value={{
+				maxBarCount,
 				isPlaying,
 				instantSort,
 				shuffle,

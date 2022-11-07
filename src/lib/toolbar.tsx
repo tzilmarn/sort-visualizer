@@ -1,18 +1,18 @@
 import * as Toolbar from '@radix-ui/react-toolbar'
+import { useContext } from 'react'
 import {
 	IoPlay as PlayIcon,
 	IoPause as PauseIcon,
 	IoPlaySkipForward as StepIcon,
 	IoShuffle as ShuffleIcon,
-	IoRepeat as NewDatasetIcon,
 } from 'react-icons/io5'
+import SimulationControlContext, {
+	allSpeeds,
+	Speed,
+} from './simulation.context'
 
 export interface Props {
-	isPlaying: boolean
-	onPlayToggle: () => void
 	onStep: () => void
-	onShuffle: () => void
-	onNewDataset: () => void
 }
 
 const ToolbarButton = (props: Toolbar.ToolbarButtonProps) => (
@@ -22,17 +22,23 @@ const ToolbarButton = (props: Toolbar.ToolbarButtonProps) => (
 	/>
 )
 
-export default function Controls({
-	isPlaying,
-	onPlayToggle,
-	onStep,
-	onShuffle,
-	onNewDataset,
-}: Props) {
+export default function Controls({ onStep }: Props) {
+	const { speed, setSpeed, isPlaying, toggleIsPlaying, shuffle } = useContext(
+		SimulationControlContext
+	)
+
+	const handleChangeSpeed = () => {
+		const nextSpeed: Speed =
+			allSpeeds[
+				(allSpeeds.findIndex((s) => s === speed) + 1) % allSpeeds.length
+			]
+		setSpeed(nextSpeed)
+	}
+
 	return (
 		<Toolbar.Root className='flex gap-1 rounded-lg bg-gray-300 p-1 dark:bg-gray-900'>
 			<ToolbarButton
-				onClick={onPlayToggle}
+				onClick={toggleIsPlaying}
 				className={isPlaying ? 'bg-primary-500/20' : ''}
 			>
 				{isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -41,11 +47,12 @@ export default function Controls({
 				<StepIcon />
 			</ToolbarButton>
 			<Toolbar.Separator className='grow' />
-			<ToolbarButton onClick={onShuffle}>
-				<ShuffleIcon />
+			<ToolbarButton className='text-sm font-bold' onClick={handleChangeSpeed}>
+				{speed}x speed
 			</ToolbarButton>
-			<ToolbarButton onClick={onNewDataset}>
-				<NewDatasetIcon />
+			<Toolbar.Separator className='grow' />
+			<ToolbarButton onClick={shuffle}>
+				<ShuffleIcon />
 			</ToolbarButton>
 		</Toolbar.Root>
 	)
