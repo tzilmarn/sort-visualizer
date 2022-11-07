@@ -1,8 +1,16 @@
+const colors = require('tailwindcss/colors')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{ts,tsx}', './index.html'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: colors.indigo
+      }
+    },
   },
-  plugins: [],
+  plugins: [
+    require('tailwindcss-radix')()
+  ],
 }

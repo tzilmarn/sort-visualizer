@@ -1,43 +1,14 @@
-import { useEffect, useId, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
 import _ from 'lodash'
-
-type Entry = {
-	id: string
-	value: number
-}
-
-type Algorithm = {
-	title: string
-	sortStep: <T extends Entry>(array: T[]) => T[]
-}
+import Vis from './vis'
+import Controls from './toolbar'
+import SimulationControlContext, { Speed } from './simulation.context'
+import AppTabs from './tabs'
+import { algorithms } from './algorithms'
 
 export default function App() {
-	const rangeInputId = useId()
-
-	const [simulationSpeed, setSimulationSpeed] = useState(0.5)
+	const [speed, setSpeed] = useState<Speed>(0.5)
 	const [isPlaying, setIsPlaying] = useState(false)
-
-	const algorithms = {
-		bubbleSort: {
-			title: 'Bubble Sort',
-			sortStep: (values) => {
-				for (let i = 0; i < values.length - 1; i++)
-					if (values[i].value > values[i + 1].value) {
-						const temp = values[i]
-						values[i] = values[i + 1]
-						values[i + 1] = temp
-					}
-				return values
-			},
-		} as Algorithm,
-	}
-
-	const [currentAlgorithmName, setCurrentAlgorithmName] =
-		useState<keyof typeof algorithms>('bubbleSort')
-	const currentAlgorithm = algorithms[currentAlgorithmName]
-	const sortStep = () =>
-		setValues((values) => currentAlgorithm.sortStep([...values]))
 
 	const [values, setValues] = useState(() =>
 		Array(50)
@@ -45,15 +16,29 @@ export default function App() {
 			.map(() => ({ id: Math.random().toString(), value: Math.random() }))
 	)
 
-	const handleIncrease = () => {
-		setValues((old) => [
-			...old,
-			{ id: Math.random().toString(), value: Math.random() },
-		])
-	}
+	const [algorithmName, setAlgorithmName] =
+		useState<keyof typeof algorithms>('bubbleSort')
+	const sortStep = useCallback(
+		() =>
+			setValues((values) => algorithms[algorithmName].sortStep([...values])),
+		[algorithmName, values]
+	)
 
-	const handleDecrease = () => {
-		setValues((old) => _.dropRight(old))
+	const setDatasetSize = (value: number) => {
+		value = Math.max(0, Math.min(100, value))
+
+		if (value > values.length)
+			setValues((old) => [
+				...old,
+				...Array(value - values.length)
+					.fill(undefined)
+					.map(() => ({
+						id: Math.random().toString(),
+						value: Math.random(),
+					})),
+			])
+		else if (value < values.length)
+			setValues((old) => _.dropRight(old, values.length - value))
 	}
 
 	const shuffle = () => {
@@ -63,7 +48,7 @@ export default function App() {
 		})
 	}
 
-	const newDataset = () => {
+	const createNewDataset = () => {
 		const newValues = Array(values.length)
 			.fill(undefined)
 			.map(() => ({ id: Math.random().toString(), value: Math.random() }))
@@ -79,109 +64,46 @@ export default function App() {
 	}
 	useEffect(() => {
 		if (!isPlaying) return
-		const refreshInterval = 100 / simulationSpeed
+		const refreshInterval = 100 / speed
 		const interval = setInterval(sortStep, refreshInterval)
 		return () => clearInterval(interval)
-	}, [isPlaying, simulationSpeed])
+	}, [isPlaying, speed])
 
 	return (
-		<div className='h-screen bg-black'>
-			<main className='container mx-auto space-y-2 p-16 text-white'>
-				<motion.div className='flex h-96 gap-1' layout>
-					{values.map(({ value, id }) => (
-						<motion.div
-							key={id}
-							layoutId={id}
-							initial={{ scaleY: 0 }}
-							animate={{ scaleY: Math.max(0.01, value) }}
-							style={{ originY: 1 }}
-							className='h-full w-full origin-bottom rounded-sm bg-indigo-500'
-							whileHover={{ y: -8 }}
-							whileDrag={{ y: 0 }}
-							dragConstraints={{ bottom: 0 }}
+		<SimulationControlContext.Provider
+			value={{
+				isPlaying,
+				instantSort,
+				shuffle,
+				createNewDataset,
+				datasetSize: values.length,
+				setDatasetSize,
+				setSpeed,
+				speed,
+				toggleIsPlaying: () => setIsPlaying((old) => !old),
+				algorithmName,
+				setAlgorithm: setAlgorithmName,
+			}}
+		>
+			<div className='text-black dark:text-white'>
+				<main className='container mx-auto space-y-2 text-white'>
+					<div className='h-96 px-4'>
+						<Vis boxes={values} />
+					</div>
+					<div className='px-4'>
+						<Controls
+							isPlaying={isPlaying}
+							onPlayToggle={toggleSorting}
+							onStep={sortStep}
+							onShuffle={shuffle}
+							onNewDataset={createNewDataset}
 						/>
-					))}
-				</motion.div>
-				<select
-					className='appearance-none rounded bg-indigo-900 px-4 py-2'
-					value={currentAlgorithmName}
-					onChange={(e) =>
-						setCurrentAlgorithmName(
-							e.currentTarget.value as keyof typeof algorithms
-						)
-					}
-				>
-					{Object.entries(algorithms).map(([name, { title }]) => (
-						<option
-							key={name}
-							value={name}
-							selected={name === currentAlgorithmName}
-						>
-							{title}
-						</option>
-					))}
-				</select>
-				<div className='flex items-center gap-2'>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={handleDecrease}
-					>
-						-
-					</button>
-					<span>{values.length}</span>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={handleIncrease}
-					>
-						+
-					</button>
-				</div>
-				<div className='flex gap-2'>
-					<button
-						disabled={isPlaying}
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={sortStep}
-					>
-						Sort Step
-					</button>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={shuffle}
-					>
-						Shuffle
-					</button>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={toggleSorting}
-					>
-						{isPlaying ? 'Stop Sorting' : 'Start Sorting'}
-					</button>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={newDataset}
-					>
-						New Dataset
-					</button>
-					<button
-						className='rounded border border-blue-600 px-4 py-1 text-2xl hover:bg-blue-600 disabled:opacity-40'
-						onClick={instantSort}
-					>
-						Instant Sort
-					</button>
-				</div>
-				<div>
-					<label htmlFor={rangeInputId}>Speed</label>
-					<input
-						id={rangeInputId}
-						type='range'
-						min={0.1}
-						max={1}
-						step={0.05}
-						value={simulationSpeed}
-						onChange={(e) => setSimulationSpeed(+e.currentTarget.value)}
-					/>
-				</div>
-			</main>
-		</div>
+					</div>
+					<div className='px-4'>
+						<AppTabs />
+					</div>
+				</main>
+			</div>
+		</SimulationControlContext.Provider>
 	)
 }
