@@ -23,7 +23,7 @@ export default function Vis({ boxes }: Props) {
 							: undefined,
 					}}
 					style={{ originY: 1 }}
-					className='h-full w-full origin-bottom rounded-sm bg-indigo-500 [min-width:4px]'
+					className='h-full w-full origin-bottom rounded-sm bg-primary-500 [min-width:4px]'
 				/>
 			))}
 		</motion.div>

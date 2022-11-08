@@ -6,7 +6,7 @@ type Props = {}
 const Button = (props: ComponentProps<'button'>) => (
 	<button
 		{...props}
-		className={`flex items-center justify-center rounded-lg bg-gray-200 p-2 text-center text-xl font-black tracking-tighter text-gray-600 [flex-grow:1] hover:bg-indigo-500/20 active:bg-indigo-400/80 disabled:text-gray-500 dark:bg-gray-800/30 dark:text-gray-200 dark:active:bg-indigo-800/80 dark:disabled:bg-gray-800/10 ${props.className}`}
+		className={`flex items-center justify-center rounded-lg bg-gray-200 p-2 text-center text-xl font-black tracking-tighter text-gray-600 [flex-grow:1] hover:bg-primary-500/20 active:bg-primary-400/80 disabled:text-gray-500 dark:bg-gray-800/30 dark:text-gray-200 dark:active:bg-primary-800/80 dark:disabled:bg-gray-800/10 ${props.className}`}
 	/>
 )
 
