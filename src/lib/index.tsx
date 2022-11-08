@@ -1,33 +1,48 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import _ from 'lodash'
 import Vis from './vis'
 import Controls from './toolbar'
 import SimulationControlContext, { Speed } from './simulation.context'
 import AppTabs from './tabs'
-import { algorithms } from './algorithms'
+import { algorithms, AlgorithmState, Entry } from './algorithms'
 
 export default function App() {
+	const minBarCount = 10
 	const maxBarCount = 500
 
-	const [speed, setSpeed] = useState<Speed>(0.5)
+	const [speed, setSpeed] = useState<Speed>(1)
 	const [isPlaying, setIsPlaying] = useState(false)
 
-	const [values, setValues] = useState(() =>
+	const [valAlgState, setValAlgState] = useState<
+		[Entry[], AlgorithmState | undefined]
+	>(() => [
 		Array(50)
 			.fill(undefined)
-			.map(() => ({ id: Math.random().toString(), value: Math.random() }))
-	)
+			.map(() => ({ id: Math.random().toString(), value: Math.random() })),
+		undefined,
+	])
 
-	const [algorithmName, setAlgorithmName] =
-		useState<keyof typeof algorithms>('bubbleSort')
-	const sortStep = useCallback(
-		() =>
-			setValues((values) => algorithms[algorithmName].sortStep([...values])),
-		[algorithmName, values]
-	)
+	const [values, algState] = valAlgState
+
+	const setValues = (updater: (values: Entry[]) => Entry[]) =>
+		setValAlgState((old) => [updater(old[0]), old[1]])
+	const setAlgState = (
+		updater: (values: AlgorithmState | undefined) => AlgorithmState | undefined
+	) => setValAlgState((old) => [old[0], updater(old[1])])
+
+	const [algName, setAlgName] = useState<keyof typeof algorithms>('bubbleSort')
+	useEffect(() => {
+		setAlgState(() => undefined)
+	}, [algName])
+
+	const sortStep = () => {
+		setValAlgState(([values, algState]) => {
+			return algorithms[algName].sortStep([...values], { ...algState })
+		})
+	}
 
 	const setDatasetSize = (value: number) => {
-		value = Math.max(0, Math.min(maxBarCount, value))
+		value = Math.max(minBarCount, Math.min(maxBarCount, value))
 
 		if (value > values.length)
 			setValues((old) => [
@@ -44,26 +59,22 @@ export default function App() {
 	}
 
 	const shuffle = () => {
-		setValues((old) => {
-			const copy = [...old]
-			return _.shuffle(copy)
+		setValAlgState(([values]) => {
+			return [_.shuffle([...values]), undefined]
 		})
 	}
 
-	const createNewDataset = () => {
-		const newValues = Array(values.length)
-			.fill(undefined)
-			.map(() => ({ id: Math.random().toString(), value: Math.random() }))
-		setValues(newValues)
-	}
+	const createNewDataset = () =>
+		setValues(() =>
+			Array(values.length)
+				.fill(undefined)
+				.map(() => ({ id: Math.random().toString(), value: Math.random() }))
+		)
 
 	const instantSort = () => {
 		setValues((old) => _.sortBy(old, 'value'))
 	}
 
-	const toggleSorting = () => {
-		setIsPlaying((old) => !old)
-	}
 	useEffect(() => {
 		if (!isPlaying) return
 		const refreshInterval = 1000 / speed
@@ -74,6 +85,7 @@ export default function App() {
 	return (
 		<SimulationControlContext.Provider
 			value={{
+				minBarCount,
 				maxBarCount,
 				isPlaying,
 				instantSort,
@@ -84,8 +96,9 @@ export default function App() {
 				setSpeed,
 				speed,
 				toggleIsPlaying: () => setIsPlaying((old) => !old),
-				algorithmName,
-				setAlgorithm: setAlgorithmName,
+				algName: algName,
+				setAlgorithm: setAlgName,
+				algState,
 			}}
 		>
 			<div className='text-black dark:text-white'>
@@ -94,13 +107,7 @@ export default function App() {
 						<Vis boxes={values} />
 					</div>
 					<div className='px-4'>
-						<Controls
-							isPlaying={isPlaying}
-							onPlayToggle={toggleSorting}
-							onStep={sortStep}
-							onShuffle={shuffle}
-							onNewDataset={createNewDataset}
-						/>
+						<Controls onStep={sortStep} />
 					</div>
 					<div className='px-4'>
 						<AppTabs />

@@ -1,10 +1,11 @@
 import { createContext } from 'react'
-import { algorithms } from './algorithms'
+import { algorithms, AlgorithmState } from './algorithms'
 
 export type Speed = 0.5 | 1.0 | 2.0 | 5.0 | 10.0
 export const allSpeeds: Speed[] = [0.5, 1, 2, 5, 10]
 
 export type SimulationControlContext = {
+	minBarCount: number
 	maxBarCount: number
 
 	speed: Speed
@@ -20,7 +21,8 @@ export type SimulationControlContext = {
 	createNewDataset: () => void
 	instantSort: () => void
 
-	algorithmName: keyof typeof algorithms
+	algName: keyof typeof algorithms
+	algState: AlgorithmState | undefined
 	setAlgorithm: (name: keyof typeof algorithms) => void
 }
 
