@@ -23,9 +23,8 @@ const ToolbarButton = (props: Toolbar.ToolbarButtonProps) => (
 )
 
 export default function Controls({ onStep }: Props) {
-	const { speed, setSpeed, isPlaying, toggleIsPlaying, shuffle } = useContext(
-		SimulationControlContext
-	)
+	const { speed, setSpeed, isPlaying, isSorted, toggleIsPlaying, shuffle } =
+		useContext(SimulationControlContext)
 
 	const handleChangeSpeed = () => {
 		const nextSpeed: Speed =
@@ -38,12 +37,13 @@ export default function Controls({ onStep }: Props) {
 	return (
 		<Toolbar.Root className='flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-900'>
 			<ToolbarButton
+				disabled={isSorted}
 				onClick={toggleIsPlaying}
 				className={isPlaying ? 'bg-primary-500/20' : ''}
 			>
 				{isPlaying ? <PauseIcon /> : <PlayIcon />}
 			</ToolbarButton>
-			<ToolbarButton disabled={isPlaying} onClick={onStep}>
+			<ToolbarButton disabled={isPlaying || isSorted} onClick={onStep}>
 				<StepIcon />
 			</ToolbarButton>
 			<Toolbar.Separator className='grow' />

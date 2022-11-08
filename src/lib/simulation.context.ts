@@ -13,6 +13,7 @@ export type SimulationControlContext = {
 
 	isPlaying: boolean
 	toggleIsPlaying: () => void
+	isSorted: boolean
 
 	datasetSize: number
 	setDatasetSize: (value: number) => void

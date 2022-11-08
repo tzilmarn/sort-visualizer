@@ -10,9 +10,6 @@ export default function App() {
 	const minBarCount = 10
 	const maxBarCount = 500
 
-	const [speed, setSpeed] = useState<Speed>(1)
-	const [isPlaying, setIsPlaying] = useState(false)
-
 	const [valAlgState, setValAlgState] = useState<
 		[Entry[], AlgorithmState | undefined]
 	>(() => [
@@ -23,6 +20,16 @@ export default function App() {
 	])
 
 	const [values, algState] = valAlgState
+	const isSorted = values.every(
+		(_, i) => !values[i + 1] || values[i].value < values[i + 1].value
+	)
+
+	const [speed, setSpeed] = useState<Speed>(1)
+	const [isPlaying, setIsPlaying] = useState(false)
+
+	useEffect(() => {
+		if (isPlaying && isSorted) setIsPlaying(false)
+	}, [isPlaying, isSorted])
 
 	const setValues = (updater: (values: Entry[]) => Entry[]) =>
 		setValAlgState((old) => [updater(old[0]), old[1]])
@@ -36,6 +43,11 @@ export default function App() {
 	}, [algName])
 
 	const sortStep = () => {
+		if (isSorted) {
+			setIsPlaying(false)
+			return
+		}
+
 		setValAlgState(([values, algState]) => {
 			return algorithms[algName].sortStep([...values], { ...algState })
 		})
@@ -96,6 +108,7 @@ export default function App() {
 				setSpeed,
 				speed,
 				toggleIsPlaying: () => setIsPlaying((old) => !old),
+				isSorted,
 				algName: algName,
 				setAlgorithm: setAlgName,
 				algState,
