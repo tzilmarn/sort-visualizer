@@ -37,13 +37,18 @@ export default function Controls({ onStep }: Props) {
 	return (
 		<Toolbar.Root className='flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-900'>
 			<ToolbarButton
+				title={isPlaying ? 'Stop sorting' : 'Start sorting'}
 				disabled={isSorted}
 				onClick={toggleIsPlaying}
 				className={isPlaying ? 'bg-primary-500/20' : ''}
 			>
 				{isPlaying ? <PauseIcon /> : <PlayIcon />}
 			</ToolbarButton>
-			<ToolbarButton disabled={isPlaying || isSorted} onClick={onStep}>
+			<ToolbarButton
+				title='Step sort'
+				disabled={isPlaying || isSorted}
+				onClick={onStep}
+			>
 				<StepIcon />
 			</ToolbarButton>
 			<Toolbar.Separator className='grow' />
@@ -51,7 +56,7 @@ export default function Controls({ onStep }: Props) {
 				{speed}x speed
 			</ToolbarButton>
 			<Toolbar.Separator className='grow' />
-			<ToolbarButton onClick={shuffle}>
+			<ToolbarButton title='Shuffle dataset' onClick={shuffle}>
 				<ShuffleIcon />
 			</ToolbarButton>
 		</Toolbar.Root>
