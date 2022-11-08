@@ -36,7 +36,12 @@ export default function SettingsTab({}: Props) {
 		<div className='flex flex-col gap-2 divide-y divide-primary-500/30'>
 			<Row>
 				<div>
-					<label htmlFor={animationToggleId}>Enable Animations</label>
+					<label
+						className='text-gray-600 dark:text-gray-300'
+						htmlFor={animationToggleId}
+					>
+						Enable Animations
+					</label>
 				</div>
 				<Switch
 					id={animationToggleId}
@@ -52,7 +57,7 @@ export default function SettingsTab({}: Props) {
 			>
 				<Row className='flex flex-row items-center justify-start gap-2'>
 					<GithubIcon />
-					View source code
+					<span>View source code</span>
 				</Row>
 			</a>
 		</div>
