@@ -10,6 +10,9 @@ export default function App() {
 	const minBarCount = 10
 	const maxBarCount = 500
 
+	const [isAnimationEnabled, setIsAnimationEnabled] = useState(true)
+	const toggleAnimation = () => setIsAnimationEnabled((value) => !value)
+
 	const [valAlgState, setValAlgState] = useState<
 		[Entry[], AlgorithmState | undefined]
 	>(() => [
@@ -37,7 +40,8 @@ export default function App() {
 		updater: (values: AlgorithmState | undefined) => AlgorithmState | undefined
 	) => setValAlgState((old) => [old[0], updater(old[1])])
 
-	const [algName, setAlgName] = useState<keyof typeof algorithms>('bubbleSort')
+	const [algName, setAlgName] =
+		useState<keyof typeof algorithms>('insertionSort')
 	useEffect(() => {
 		setAlgState(() => undefined)
 	}, [algName])
@@ -108,6 +112,8 @@ export default function App() {
 				setSpeed,
 				speed,
 				toggleIsPlaying: () => setIsPlaying((old) => !old),
+				isAnimationEnabled,
+				toggleAnimation,
 				isSorted,
 				algName: algName,
 				setAlgorithm: setAlgName,
@@ -115,16 +121,12 @@ export default function App() {
 			}}
 		>
 			<div className='text-black dark:text-white'>
-				<main className='container mx-auto space-y-2 text-white'>
-					<div className='h-96 px-4'>
+				<main className='container mx-auto space-y-2 p-4 text-white'>
+					<div className='h-56 md:h-96'>
 						<Vis boxes={values} />
 					</div>
-					<div className='px-4'>
-						<Controls onStep={sortStep} />
-					</div>
-					<div className='px-4'>
-						<AppTabs />
-					</div>
+					<Controls onStep={sortStep} />
+					<AppTabs />
 				</main>
 			</div>
 		</SimulationControlContext.Provider>

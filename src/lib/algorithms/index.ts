@@ -23,6 +23,6 @@ export type Algorithm<State extends AlgorithmState> = {
 }
 
 export const algorithms: Record<string, Algorithm<any>> = {
-	[bubbleSort.name]: bubbleSort,
 	[insertionSort.name]: insertionSort,
+	[bubbleSort.name]: bubbleSort,
 }

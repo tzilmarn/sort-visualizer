@@ -14,6 +14,8 @@ export type SimulationControlContext = {
 	isPlaying: boolean
 	toggleIsPlaying: () => void
 	isSorted: boolean
+	isAnimationEnabled: boolean
+	toggleAnimation: () => void
 
 	datasetSize: number
 	setDatasetSize: (value: number) => void

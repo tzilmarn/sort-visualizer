@@ -1,6 +1,7 @@
 import * as Tabs from '@radix-ui/react-tabs'
 import DatasetTab from './dataset.tab'
 import AlgorithmTab from './algorithm.tab'
+import SettingsTab from './settings.tab'
 
 type Props = {}
 
@@ -24,6 +25,11 @@ const tabs = [
 		name: 'dataset',
 		title: 'Dataset',
 		Component: DatasetTab,
+	},
+	{
+		name: 'settings',
+		title: 'Settings',
+		Component: SettingsTab,
 	},
 ]
 
