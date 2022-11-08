@@ -1,4 +1,4 @@
-![Random Array](./assets/cover-image.jpeg)
+![Random Array](./assets/cover-image.jpg)
 
 # Sort Visualizer
 
