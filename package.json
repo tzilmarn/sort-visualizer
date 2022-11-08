@@ -2,9 +2,8 @@
 	"name": "@tzilmarn/sort-visualizer",
 	"private": true,
 	"version": "0.0.0",
-	"files": [
-		"dist"
-	],
+	"homepage": "https://github.com/tzilmarn/notion-orm",
+	"files": ["dist"],
 	"main": "./dist/my-lib.umd.js",
 	"module": "./dist/my-lib.es.js",
 	"types": "./dist/index.d.ts",
@@ -14,6 +13,9 @@
 			"require": "./dist/my-lib.umd.js"
 		}
 	},
+	"keywords": ["visualization", "algorithms"],
+	"author": "tzilmarn <opensource@tzilmarn.com> https://tzilmarn.com",
+	"license": "AGPLv3",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
