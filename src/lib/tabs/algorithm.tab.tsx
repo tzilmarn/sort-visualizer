@@ -2,6 +2,7 @@ import { useContext } from 'react'
 import { algorithms } from '../algorithms'
 import SimulationControlContext from '../simulation.context'
 import { FaWikipediaW as WikipediaIcon } from 'react-icons/fa'
+import { AnimatePresence, motion } from 'framer-motion'
 
 type Props = {}
 
@@ -24,15 +25,20 @@ export default function AlgorithmTab({}: Props) {
 				))}
 			</select>
 
-			{algState && (
-				<div>
-					<pre className='rounded-lg bg-gray-200 p-4 text-gray-600 dark:bg-gray-800 dark:text-gray-200'>
+			<AnimatePresence exitBeforeEnter>
+				{algState && (
+					<motion.pre
+						initial={{ height: 0 }}
+						animate={{ height: 'auto' }}
+						exit={{ height: 0 }}
+						className='overflow-auto rounded-lg bg-gray-200 p-4 text-gray-600 dark:bg-gray-800 dark:text-gray-200'
+					>
 						// Current internal state of algorithm
 						<br />
 						{JSON.stringify(algState, null, 2)}
-					</pre>
-				</div>
-			)}
+					</motion.pre>
+				)}
+			</AnimatePresence>
 
 			<p className='leading-snug text-gray-500 dark:text-gray-200'>
 				{algorithms[algName].description}
